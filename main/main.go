@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	Height     = 6
+	Height     = 10
 	Width      = Height * 2
 	GlassWidth = 2
 	TotalSands = Height * (Height + 1)
@@ -129,10 +129,12 @@ func (g *Glass) sandFlow() {
 
 func (g *Glass) PrintGlass() {
 	startY := (g.screenH - g.totalHeight) / 2
-	startX := (g.screenW - Width - 2*GlassWidth) / 2
-	fmt.Printf("\033[%d;%dH%s\n", startY, startX, strings.Repeat("=", Width+2*GlassWidth))
+	startX := (g.screenW - Width - 2*GlassWidth - 4) / 2 // 4 is vertical line
+	fmt.Printf("\033[%d;%dH%s\n", startY, startX, strings.Repeat("=", Width+2*GlassWidth+4))
 	var out bytes.Buffer
 	for i := Height - 1; i >= 0; i-- {
+		out.WriteRune('|')
+		out.WriteRune('|')
 		for k := 0; k < Height-i-1; k++ {
 			out.WriteRune(' ')
 		}
@@ -148,15 +150,22 @@ func (g *Glass) PrintGlass() {
 		}
 		out.WriteRune('/')
 		out.WriteRune('/')
+		for k := 0; k < Height-i-1; k++ {
+			out.WriteRune(' ')
+		}
+		out.WriteRune('|')
+		out.WriteRune('|')
 		out.WriteRune('\n')
 		fmt.Printf("\033[%d;%dH%s\n", startY+Height-i, startX, out.String())
 		out.Reset()
 	}
 
-	fmt.Printf("\033[%d;%dH%s\n", startY+Height+1, startX, strings.Repeat(" ", Height)+"\\\\//")
-	fmt.Printf("\033[%d;%dH%s\n", startY+Height+2, startX, strings.Repeat(" ", Height)+"//\\\\")
+	fmt.Printf("\033[%d;%dH%s\n", startY+Height+1, startX, "||"+strings.Repeat(" ", Height)+"\\\\//"+strings.Repeat(" ", Height)+"||")
+	fmt.Printf("\033[%d;%dH%s\n", startY+Height+2, startX, "||"+strings.Repeat(" ", Height)+"//\\\\"+strings.Repeat(" ", Height)+"||")
 
 	for i := 0; i < Height; i++ {
+		out.WriteRune('|')
+		out.WriteRune('|')
 		for k := 0; k < Height-i-1; k++ {
 			out.WriteRune(' ')
 		}
@@ -172,14 +181,19 @@ func (g *Glass) PrintGlass() {
 		}
 		out.WriteRune('\\')
 		out.WriteRune('\\')
+		for k := 0; k < Height-i-1; k++ {
+			out.WriteRune(' ')
+		}
+		out.WriteRune('|')
+		out.WriteRune('|')
 		out.WriteRune('\n')
 		fmt.Printf("\033[%d;%dH%s\n", startY+Height+i+3, startX, out.String())
 		out.Reset()
 	}
-	fmt.Printf("\033[%d;%dH%s\n", startY+Width+3, startX, strings.Repeat("=", Width+2*GlassWidth))
+	fmt.Printf("\033[%d;%dH%s\n", startY+Width+3, startX, strings.Repeat("=", Width+2*GlassWidth+4))
 	now := time.Now()
 
-	fmt.Printf("\033[%d;%dH%s\n", startY+Width+5, (g.screenW-18)/2, now.Format("2006-01-02 15:04:05"))
+	fmt.Printf("\033[34m\033[%d;%dH%s\033[0m\n", startY+Width+5, (g.screenW-18)/2, now.Format("2006-01-02 15:04:05"))
 }
 
 func main() {
