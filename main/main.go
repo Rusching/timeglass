@@ -185,15 +185,9 @@ func (g *Glass) PrintGlass() {
 func main() {
 	g := NewGlass()
 	for {
-		// 清除屏幕并移动光标到左上角
-		// fmt.Print("\033[2J\033[H")
 		fmt.Print("\033[2J\033[3J\033[H")
-
-		// 打印动画帧
-		// fmt.Println("Frame", i)
 		g.PrintGlass()
-		// 等待一段时间
-		time.Sleep(time.Second / 5)
+		time.Sleep(time.Second / 3)
 		g.sandFlow()
 	}
 }
