@@ -2,7 +2,7 @@
 
 The terminal is too boring. Give your mind a break by gazing at this hourglass.
 
-![alt text](pics/demo.gif)
+![alt text](pics/glass.gif)
 
 ## Requirement
 
