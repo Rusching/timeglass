@@ -7,6 +7,7 @@ The terminal is too boring. Give your mind a break by gazing at this hourglass.
 ## Requirement
 
 golang.org/x/sys v0.16.0
+
 golang.org/x/term v0.16.0
 
 ## Run
