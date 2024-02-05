@@ -3,7 +3,10 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"time"
+
+	"golang.org/x/term"
 )
 
 const (
@@ -18,14 +21,20 @@ type Glass struct {
 	lower      [][]bool
 	upperState []bool
 	lowerState []bool
+	screenH    int
+	screenW    int
 }
 
 func NewGlass() *Glass {
+	width, height, _ := term.GetSize(int(os.Stdout.Fd()))
+
 	g := &Glass{
 		upper:      make([][]bool, Height),
 		lower:      make([][]bool, Height),
 		upperState: make([]bool, Height),
 		lowerState: make([]bool, Height),
+		screenW:    width,
+		screenH:    height,
 	}
 
 	for i := range g.upperState {
@@ -93,7 +102,10 @@ func (g *Glass) SandFlow() {
 	}
 }
 
-func (g *Glass) String() string {
+func (g *Glass) PrintGlass() {
+	totalHeight := Width
+	startY := (g.screenH - totalHeight) / 2
+	startX := (g.screenW - Width) / 2
 	var out bytes.Buffer
 	for i := Height - 1; i >= 0; i-- {
 		for j := 0; j < Width; j++ {
@@ -104,6 +116,8 @@ func (g *Glass) String() string {
 			}
 		}
 		out.WriteRune('\n')
+		fmt.Printf("\033[%d;%dH%s\n", startY+Height-i-1, startX, out.String())
+		out.Reset()
 	}
 	for i := 0; i < Height; i++ {
 		for j := 0; j < Width; j++ {
@@ -114,12 +128,32 @@ func (g *Glass) String() string {
 			}
 		}
 		out.WriteRune('\n')
+		fmt.Printf("\033[%d;%dH%s\n", startY+Height+i, startX, out.String())
+		out.Reset()
 	}
-	return out.String()
+}
+
+func getScreenSize() {
+	w, h, _ := term.GetSize(int(os.Stdout.Fd()))
+	content := "Hello, World!"
+
+	// 计算开始打印的位置
+	startX := (w - len(content)) / 2
+	startY := h / 2
+
+	// 移动光标到指定位置
+	fmt.Printf("\033[%d;%dH", startY, startX)
+
+	// 打印内容
+	fmt.Println(content)
 }
 
 func main() {
 	g := NewGlass()
+	// for {
+	// 	fmt.Print("\033[2J\033[3J\033[H")
+	// 	getScreenSize()
+	// }
 
 	for i := 0; i <= TotalSands; i++ {
 		// 清除屏幕并移动光标到左上角
@@ -128,9 +162,9 @@ func main() {
 
 		// 打印动画帧
 		// fmt.Println("Frame", i)
-		fmt.Println(g)
+		g.PrintGlass()
 		// 等待一段时间
-		time.Sleep(time.Second / 10)
+		time.Sleep(time.Second / 5)
 		g.SandFlow()
 	}
 }
